@@ -259,7 +259,7 @@ def test_m1_native_btrfs_subvolume_snapshot_and_restore() -> None:
         ws = mgr.init_workspace(base / "ws")
         (ws / "mod.py").write_text("VALUE = 10\n", encoding="utf-8")
         snap = mgr.create_snapshot(ws, "s0")
-        assert snap.backend == "btrfs_subvolume"
+        assert snap.backend == ("btrfs_subvolume" if mgr.use_btrfs else "reflink_tree")
 
         # Mutate original workspace
         (ws / "mod.py").write_text("VALUE = 999\n", encoding="utf-8")
