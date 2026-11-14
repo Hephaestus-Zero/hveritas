@@ -1,0 +1,21 @@
+goal: "parse_duration fonksiyonunu yaz: '1h30m' gibi süre metinlerini saniyeye çevirir"
+budget:
+  max_wall_seconds: 900
+  max_tokens: 200000
+  max_usd: 3.0
+  max_repair_attempts: 4
+requirements:
+  - id: req_duration
+    statement: "parse_duration(text) bir süre metnini toplam saniye olarak int döndürür. Biçim saat için 'h' ve dakika için 'm' sonekleriyle verilir ve ikisi birlikte ('1h30m') veya ayrı ayrı ('2h', '45m') kullanılabilir. Birimsiz salt sayı saniye kabul edilir ('90' -> 90). Boş metin 0 döndürür."
+    target_file: "src/duration.py"
+    function_name: "parse_duration"
+    arg_names: ["text"]
+    constraints: ["ağ erişimi yok", "sadece stdlib"]
+    depends_on: []
+    proxy_assertions:
+      - {function: "parse_duration", args: ["1h30m"], expected: 5400}
+      - {function: "parse_duration", args: ["2h"], expected: 7200}
+    heldout_assertions:
+      - {function: "parse_duration", args: ["45m"], expected: 2700}
+      - {function: "parse_duration", args: [""], expected: 0}
+      - {function: "parse_duration", args: ["90"], expected: 90}

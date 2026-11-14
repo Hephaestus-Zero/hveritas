@@ -1,0 +1,13 @@
+[Unit]
+Description=hveritas Verified Autonomous Goal Queue Processor (M8-E3)
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/hveritas
+ExecStart=/opt/hveritas/.venv/bin/python3 /opt/hveritas/scripts/run_goal_queue.py
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

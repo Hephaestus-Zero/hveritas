@@ -1,0 +1,22 @@
+goal: "apply_discount fonksiyonunu yaz: SAVE10 kodu %10 indirim uygular, diğer kupon kodları fiyatı değiştirmez"
+budget:
+  max_wall_seconds: 900
+  max_tokens: 200000
+  max_usd: 3.0
+  max_repair_attempts: 4
+requirements:
+  - id: req_discount
+    statement: "apply_discount(price, code) kupon kodu 'SAVE10' ise round(price * 0.9, 6), diğer tüm kupon kodları için float(price) döndürür"
+    target_file: "src/pricing.py"
+    function_name: "apply_discount"
+    arg_names: ["price", "code"]
+    constraints: ["ağ erişimi yok", "sadece stdlib"]
+    depends_on: []
+    proxy_assertions:
+      - {function: "apply_discount", args: [100, "SAVE10"], expected: 90.0}
+      - {function: "apply_discount", args: [200, "SAVE10"], expected: 180.0}
+      - {function: "apply_discount", args: [80, "OTHER"], expected: 80.0}
+    heldout_assertions:
+      - {function: "apply_discount", args: [0, "SAVE10"], expected: 0.0}
+      - {function: "apply_discount", args: [100, "UNKNOWN"], expected: 100.0}
+      - {function: "apply_discount", args: [250, "SAVE10"], expected: 225.0}
