@@ -15,8 +15,9 @@ from hveritas.harness.oracle_vault import EncryptedOracleVault
 from hveritas.ledger.canonical import canonical_json
 
 DEFAULT_VERIFIER_DIR = Path.home() / ".local" / "share" / "hveritas" / "verifier"
-DEFAULT_VERIFIER_IMAGE_DIGEST = (
-    "sha256:7f8d7567a02f9d0177d158ce8c0e4a56dfa64fc7099e3e600ccdf9539753ccf2"
+DEFAULT_VERIFIER_IMAGE_DIGEST = os.environ.get(
+    "HVERITAS_VERIFIER_IMAGE_DIGEST",
+    "sha256:7f8d7567a02f9d0177d158ce8c0e4a56dfa64fc7099e3e600ccdf9539753ccf2",
 )
 SCRATCH_ROOT = Path("/dev/shm/hephaestus-scratch")
 

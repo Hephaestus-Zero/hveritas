@@ -25,13 +25,19 @@
 
 ## Installation & Test Suite
 
-Requires Python `>= 3.12`.
+Requires Python `>= 3.12` and Docker (for `--network=none` container-isolated verifier execution).
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
 
-# Run static linter and full verification test suite
+# Provision out-of-tree verifier & BenchJack audit bundles (Invariant I1) and build verifier image
+mkdir -p ~/.local/share/hveritas
+cp -a external_bundles/verifier ~/.local/share/hveritas/verifier
+cp -a external_bundles/benchjack_tools ~/.local/share/hveritas/benchjack_tools
+export HVERITAS_VERIFIER_IMAGE_DIGEST="$(docker build -q ~/.local/share/hveritas/verifier)"
+
+# Run static linter and full verification test suite (including isolated Docker e2e)
 .venv/bin/ruff check src tests
 .venv/bin/pytest -v
 ```

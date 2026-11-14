@@ -15,7 +15,14 @@ jobs:
           python-version: "3.12"
       - name: Install package and dev dependencies
         run: pip install -e ".[dev]"
+      - name: Provision external verifier bundle and build isolated Docker image
+        run: |
+          mkdir -p "$HOME/.local/share/hveritas"
+          cp -a external_bundles/verifier "$HOME/.local/share/hveritas/verifier"
+          cp -a external_bundles/benchjack_tools "$HOME/.local/share/hveritas/benchjack_tools"
+          IMG_ID=$(docker build -q "$HOME/.local/share/hveritas/verifier")
+          echo "HVERITAS_VERIFIER_IMAGE_DIGEST=$IMG_ID" >> "$GITHUB_ENV"
       - name: Ruff lint
         run: ruff check src tests
-      - name: Pytest suite
-        run: pytest -q -m "not docker_e2e"
+      - name: Pytest suite (unit, SAST self-audit, and isolated Docker e2e)
+        run: pytest -q
