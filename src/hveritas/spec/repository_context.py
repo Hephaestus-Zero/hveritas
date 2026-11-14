@@ -239,9 +239,12 @@ def build_repository_context(
                         discover(child, relative + "/", depth + 1)
                     finally:
                         os.close(child)
-                elif stat.S_ISREG(info.st_mode) and info.st_nlink == 1:
-                    if Path(name).suffix.lower() in _SOURCE or name.lower() in _ENTRY:
-                        candidates.append(relative)
+                elif (
+                    stat.S_ISREG(info.st_mode)
+                    and info.st_nlink == 1
+                    and (Path(name).suffix.lower() in _SOURCE or name.lower() in _ENTRY)
+                ):
+                    candidates.append(relative)
             except OSError:
                 discovery_truncated = True
 

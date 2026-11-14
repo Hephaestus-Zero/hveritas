@@ -89,12 +89,11 @@ def validate_semconv_span(span: SpanRecord) -> list[str]:
             errors.append(f"execute_tool missing {ga.GEN_AI_TOOL_NAME}")
         if not span.attributes.get(ga.GEN_AI_TOOL_CALL_ID):
             errors.append(f"execute_tool missing {ga.GEN_AI_TOOL_CALL_ID}")
-    elif op == OP_PLAN:
-        if oi_kind not in {
-            OpenInferenceSpanKindValues.CHAIN.value,
-            OpenInferenceSpanKindValues.AGENT.value,
-        }:
-            errors.append(f"plan must have CHAIN/AGENT kind, got {oi_kind!r}")
+    elif op == OP_PLAN and oi_kind not in {
+        OpenInferenceSpanKindValues.CHAIN.value,
+        OpenInferenceSpanKindValues.AGENT.value,
+    }:
+        errors.append(f"plan must have CHAIN/AGENT kind, got {oi_kind!r}")
 
     if span.end_time_ns < span.start_time_ns:
         errors.append("end_time_ns < start_time_ns")

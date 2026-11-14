@@ -1,5 +1,8 @@
 # hveritas — Container-Isolated Multi-Tier Verification & Differential Fuzzing Harness
 
+[![CI](https://github.com/Hephaestus-Zero/hveritas/actions/workflows/ci.yml/badge.svg)](https://github.com/Hephaestus-Zero/hveritas/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 `hveritas` is an adversarial software verification and security auditing harness designed to validate untrusted or autonomously synthesized code under strict epistemic isolation. Instead of trusting self-reported tool outputs or single-family LLM judges, `hveritas` enforces network-isolated container execution, encrypted held-out test vaults, deterministic fault bisection, static security analysis (`Bandit`), mutation testing (`mutmut`), and cross-family differential fuzzing.
 
 ## Core Security & Verification Architecture
