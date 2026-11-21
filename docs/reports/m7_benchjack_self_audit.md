@@ -5,8 +5,8 @@
 - **Overall Verdict:** **PASS (0 unmitigated exploits)**
 - **Scheduled Timer Cadence:** `OnCalendar=daily` (`systemd` user timer)
 - **Targets Scanned:**
-  - `/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas`
-  - `/home/user/.local/share/hveritas/verifier`
+  - `src/hveritas`
+  - `~/.local/share/hveritas/verifier`
 
 ## Summary Metrics
 
@@ -56,23 +56,23 @@
 | `benchjack_trust_map` | `V7` | `MEDIUM` | `runner.py:111` | `architectural_control_verified` | Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container. |
 | `benchjack_trust_map` | `V7` | `MEDIUM` | `runner.py:188` | `architectural_control_verified` | Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container. |
 | `benchjack_trust_map` | `V7` | `MEDIUM` | `runner.py:372` | `architectural_control_verified` | Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container. |
-| `bandit` | `B108` | `MEDIUM` | `bisect.py:46` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `counterfactual.py:80` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `engine.py:43` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `fault_suite.py:388` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `heldout_faults.py:505` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `cli.py:833` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `cli.py:986` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `bisect.py:46` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `counterfactual.py:80` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `engine.py:43` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `fault_suite.py:388` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `heldout_faults.py:505` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `cli.py:833` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `cli.py:986` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
 | `bandit` | `B608` | `MEDIUM` | `db.py:66` | `architectural_control_verified` | Read-only (?mode=ro) SQLite schema introspection over double-quote escaped sqlite_master table identifiers; zero untrusted value interpolation. |
-| `bandit` | `B108` | `MEDIUM` | `isolation.py:21` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `isolation.py:185` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `oracle_vault.py:116` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `worker_sandbox.py:61` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `verifier.py:18` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `verifier.py:450` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `runner.py:35` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `runner.py:36` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `runner.py:83` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `runner.py:113` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `runner.py:190` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
-| `bandit` | `B108` | `MEDIUM` | `runner.py:374` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `isolation.py:21` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `isolation.py:185` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `oracle_vault.py:116` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `worker_sandbox.py:61` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `verifier.py:18` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `verifier.py:450` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `runner.py:35` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `runner.py:36` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `runner.py:83` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `runner.py:113` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `runner.py:190` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |
+| `bandit` | `B108` | `MEDIUM` | `runner.py:374` | `architectural_control_verified` | Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive. |

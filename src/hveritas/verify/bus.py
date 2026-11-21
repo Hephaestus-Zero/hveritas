@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from inspect_ai.scorer import Score, Scorer, Target, accuracy, scorer
-from inspect_ai.solver import TaskState
+if TYPE_CHECKING:
+    from inspect_ai.scorer import Scorer
 
 from hveritas.effects.fs import FilesystemProbe
 from hveritas.harness.isolation import IsolatedContainerVerifier
@@ -42,6 +42,7 @@ class RequirementDagJudge:
     def evaluate(self, workspace: Path, dag_nodes: list[dict[str, Any]]) -> list[CheckResult]:
         if not dag_nodes:
             return []
+        ws = workspace.resolve()
         checks: list[CheckResult] = []
         passed_by_id: dict[str, bool] = {}
 
@@ -65,7 +66,21 @@ class RequirementDagJudge:
             required_tokens = [str(t) for t in node.get("required_tokens", [])]
             forbidden_tokens = [str(t) for t in node.get("forbidden_tokens", [])]
 
-            target = (workspace / rel_file).resolve() if rel_file else None
+            target = (ws / rel_file).resolve() if rel_file else None
+            if target is not None and target != ws and ws not in target.parents:
+                passed_by_id[node_id] = False
+                checks.append(
+                    CheckResult(
+                        check=f"dag_node:{node_id}",
+                        passed=False,
+                        score=0.0,
+                        details={
+                            "error": f"evidence file escapes workspace: {rel_file!r}",
+                            "evidence": [],
+                        },
+                    )
+                )
+                continue
             if target is None or not target.is_file():
                 passed_by_id[node_id] = False
                 checks.append(
@@ -335,18 +350,29 @@ class VerifierBus:
         )
 
 
-@scorer(metrics=[accuracy()])
 def inspect_tier_scorer(tier_fn: TierVerifierFn) -> Scorer:
     """Bridge any hveritas `fn(VerificationState) -> Evidence` tier into an `inspect_ai` Scorer."""
+    try:
+        from inspect_ai.scorer import Score, Target, accuracy, scorer
+        from inspect_ai.solver import TaskState
+    except ImportError as exc:
+        raise ImportError(
+            "inspect_ai is required for inspect_tier_scorer; "
+            "install with `pip install 'hveritas[t4]'`."
+        ) from exc
 
-    async def score(state: TaskState, target: Target) -> Score:
-        ver_state = VerificationState.model_validate(state.metadata["verification_state"])
-        ev = tier_fn(ver_state)
-        return Score(
-            value=1.0 if ev.passed else 0.0,
-            answer=target.text,
-            explanation=f"Tier {ev.tier} passed={ev.passed} score={ev.score}",
-            metadata=ev.model_dump(mode="json"),
-        )
+    @scorer(metrics=[accuracy()])
+    def _factory() -> Scorer:
+        async def score(state: TaskState, target: Target) -> Score:
+            ver_state = VerificationState.model_validate(state.metadata["verification_state"])
+            ev = tier_fn(ver_state)
+            return Score(
+                value=1.0 if ev.passed else 0.0,
+                answer=target.text,
+                explanation=f"Tier {ev.tier} passed={ev.passed} score={ev.score}",
+                metadata=ev.model_dump(mode="json"),
+            )
 
-    return score
+        return score
+
+    return _factory()

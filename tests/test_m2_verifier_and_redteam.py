@@ -137,7 +137,7 @@ def test_redteam_req03_verifier_code_outside_agent_workspace(tmp_path: Path) -> 
     assert '"passed": true' in proc.stdout.lower()
 
     # 2. Isolation ON: external `~/.local/share/hveritas/verifier` is used; workspace `runner.py` ignored
-    repo_root = Path("/home/user/projects/hveritas").resolve()
+    repo_root = Path(__file__).resolve().parents[1]
     assert repo_root not in DEFAULT_VERIFIER_DIR.resolve().parents
     with pytest.raises(IsolationConfigurationError):
         IsolatedContainerVerifier(verifier_dir=ws, agent_repo_root=ws)

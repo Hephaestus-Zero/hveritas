@@ -190,7 +190,9 @@ print(json.dumps({{
         )
         assert t3_ev.passed is True
         assert t3_ev.score == 1.0
-        leftover = list(Path("/dev/shm/hephaestus-scratch").glob("hv_heldout_*"))
+        from hveritas.harness.isolation import default_scratch_root
+
+        leftover = list(default_scratch_root().glob("hv_heldout_*"))
         assert leftover == []
     finally:
         httpd.shutdown()

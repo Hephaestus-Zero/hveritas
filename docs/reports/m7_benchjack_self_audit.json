@@ -8,7 +8,7 @@
   "findings": [
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/repository/verifier.py",
+      "file": "src/hveritas/repository/verifier.py",
       "line": 532,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -18,7 +18,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/repository/verifier.py",
+      "file": "src/hveritas/repository/verifier.py",
       "line": 582,
       "message": "Subprocess output capture (subprocess.run([self.docker_bin, *action]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -28,7 +28,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/worker/backend.py",
+      "file": "src/hveritas/worker/backend.py",
       "line": 184,
       "message": "Subprocess output capture (subprocess.run([sys.executable, '-c', shim, exec_path, *tail_args]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -38,7 +38,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/worker/backend.py",
+      "file": "src/hveritas/worker/backend.py",
       "line": 203,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -48,7 +48,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/evolve/self_audit.py",
+      "file": "src/hveritas/evolve/self_audit.py",
       "line": 213,
       "message": "Subprocess output capture (subprocess.run([sys.executable, str(self.tools_dir / 'docker_analyzer.py'), str(target)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -58,7 +58,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/evolve/self_audit.py",
+      "file": "src/hveritas/evolve/self_audit.py",
       "line": 243,
       "message": "Subprocess output capture (subprocess.run([sys.executable, str(self.tools_dir / 'trust_map.py'), str(target), '--eval-patterns', 'verify/', 'harness/', '^runner\\\\.py$', '--agent-patterns', 'loop/', 'agent/']))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -68,7 +68,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/evolve/self_audit.py",
+      "file": "src/hveritas/evolve/self_audit.py",
       "line": 347,
       "message": "Subprocess output capture (subprocess.run([sys.executable, '-m', 'bandit', '-q', '-r', *[str(t) for t in scan_targets], '-ll', '-f', 'json', '-o', str(bandit_json)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -78,7 +78,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/evolve/mutation_gate.py",
+      "file": "src/hveritas/evolve/mutation_gate.py",
       "line": 132,
       "message": "Subprocess output capture (subprocess.run([sys.executable, '-m', 'mutmut', 'run']))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -88,7 +88,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/worker_sandbox.py",
+      "file": "src/hveritas/harness/worker_sandbox.py",
       "line": 73,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -98,7 +98,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/isolation.py",
+      "file": "src/hveritas/harness/isolation.py",
       "line": 212,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -108,7 +108,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/oracle_vault.py",
+      "file": "src/hveritas/harness/oracle_vault.py",
       "line": 84,
       "message": "Subprocess output capture (subprocess.run(['git', 'add', out_path.name]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -118,7 +118,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/oracle_vault.py",
+      "file": "src/hveritas/harness/oracle_vault.py",
       "line": 90,
       "message": "Subprocess output capture (subprocess.run(['git', 'commit', '-m', f'oracle: seal {oracle_id}']))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -128,7 +128,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/heldout_faults.py",
+      "file": "src/hveritas/attribute/heldout_faults.py",
       "line": 503,
       "message": "Subprocess output capture (subprocess.run([sys.executable, '-I', '-B', str(checker_script), str(ws)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -138,7 +138,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/fault_suite.py",
+      "file": "src/hveritas/attribute/fault_suite.py",
       "line": 386,
       "message": "Subprocess output capture (subprocess.run([sys.executable, '-I', '-B', str(checker_script), str(ws)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -148,7 +148,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/session.py",
+      "file": "src/hveritas/tape/session.py",
       "line": 137,
       "message": "Subprocess output capture (subprocess.run(argv))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -158,7 +158,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 24,
       "message": "Subprocess output capture (subprocess.run(['stat', '-f', '-c', '%T', str(probe_dir)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -168,7 +168,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 56,
       "message": "Subprocess output capture (subprocess.run(['btrfs', 'subvolume', 'create', str(ws)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -178,7 +178,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 78,
       "message": "Subprocess output capture (subprocess.run(['btrfs', 'subvolume', 'snapshot', '-r', str(ws), str(snap_dest)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -188,7 +188,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 87,
       "message": "Subprocess output capture (subprocess.run(['cp', '-a', '--reflink=auto', str(ws), str(snap_dest)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -198,7 +198,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 117,
       "message": "Subprocess output capture (subprocess.run(['btrfs', 'subvolume', 'snapshot', str(snap_src), str(target)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -208,7 +208,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 125,
       "message": "Subprocess output capture (subprocess.run(['cp', '-a', '--reflink=auto', str(snap_src), str(target)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -218,7 +218,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 160,
       "message": "Subprocess output capture (subprocess.run(['btrfs', 'subvolume', 'delete', str(path)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -228,7 +228,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/tape/snapshot.py",
+      "file": "src/hveritas/tape/snapshot.py",
       "line": 167,
       "message": "Subprocess output capture (subprocess.run(['sudo', '-n', 'btrfs', 'subvolume', 'delete', str(path)]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -238,7 +238,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 81,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -248,7 +248,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 111,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -258,7 +258,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 188,
       "message": "Subprocess output capture (subprocess.run(cmd))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -268,7 +268,7 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 372,
       "message": "Subprocess output capture (subprocess.run([PINNED_PYTHON, '-I', '-B', '-c', code]))",
       "mitigation_note": "Runs either on host trusted binaries (btrfs/git/docker) or inside digest-pinned --network=none uid=10001 python3 -I container.",
@@ -278,77 +278,77 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/bisect.py",
+      "file": "src/hveritas/attribute/bisect.py",
       "line": 46,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/counterfactual.py",
+      "file": "src/hveritas/attribute/counterfactual.py",
       "line": 80,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/engine.py",
+      "file": "src/hveritas/attribute/engine.py",
       "line": 43,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/fault_suite.py",
+      "file": "src/hveritas/attribute/fault_suite.py",
       "line": 388,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/attribute/heldout_faults.py",
+      "file": "src/hveritas/attribute/heldout_faults.py",
       "line": 505,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/cli.py",
+      "file": "src/hveritas/cli.py",
       "line": 833,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/cli.py",
+      "file": "src/hveritas/cli.py",
       "line": 986,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/effects/db.py",
+      "file": "src/hveritas/effects/db.py",
       "line": 66,
       "message": "[B608] Possible SQL injection vector through string-based query construction.",
       "mitigation_note": "Read-only (?mode=ro) SQLite schema introspection over double-quote escaped sqlite_master table identifiers; zero untrusted value interpolation.",
@@ -358,120 +358,120 @@
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/isolation.py",
+      "file": "src/hveritas/harness/isolation.py",
       "line": 21,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/isolation.py",
+      "file": "src/hveritas/harness/isolation.py",
       "line": 185,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/oracle_vault.py",
+      "file": "src/hveritas/harness/oracle_vault.py",
       "line": 116,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/harness/worker_sandbox.py",
+      "file": "src/hveritas/harness/worker_sandbox.py",
       "line": 61,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/repository/verifier.py",
+      "file": "src/hveritas/repository/verifier.py",
       "line": 18,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas/repository/verifier.py",
+      "file": "src/hveritas/repository/verifier.py",
       "line": 450,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 35,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 36,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 83,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 113,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 190,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
     },
     {
       "disposition": "architectural_control_verified",
-      "file": "/home/user/.local/share/hveritas/verifier/runner.py",
+      "file": "~/.local/share/hveritas/verifier/runner.py",
       "line": 374,
       "message": "[B108] Probable insecure usage of temp file/directory.",
-      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or /dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive.",
+      "mitigation_note": "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or <scratch_root>/<pid>_<csprng_hex> per workspace directive.",
       "scanner": "bandit",
       "severity": "MEDIUM",
       "vulnerability_class": "B108"
@@ -481,8 +481,8 @@
   "passed": true,
   "schedule_timer_calendar": "daily",
   "targets_scanned": [
-    "/dev/shm/hephaestus-scratch/gh-publish/hveritas/src/hveritas",
-    "/home/user/.local/share/hveritas/verifier"
+    "src/hveritas",
+    "~/.local/share/hveritas/verifier"
   ],
   "timestamp_iso": "2026-11-14T09:18:39.772556+00:00",
   "trust_boundary_conflicts_count": 0,

@@ -29,26 +29,32 @@ Requires Python `>= 3.12` and Docker (for `--network=none` container-isolated ve
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install -e ".[dev]"
+.venv/bin/pip install -e ".[all,dev]"  # or `pip install -e .` plus extras: [t4], [audit], [anthropic]
 
-# Provision out-of-tree verifier & BenchJack audit bundles (Invariant I1) and build verifier image
-mkdir -p ~/.local/share/hveritas
-cp -a external_bundles/verifier ~/.local/share/hveritas/verifier
-cp -a external_bundles/benchjack_tools ~/.local/share/hveritas/benchjack_tools
-export HVERITAS_VERIFIER_IMAGE_DIGEST="$(docker build -q ~/.local/share/hveritas/verifier)"
+# Provision out-of-tree verifier & BenchJack audit bundles (Invariant I1), build the Docker image,
+# and persist its digest to ~/.local/share/hveritas/verifier_digest
+.venv/bin/hveritas setup-verifier --build-image
 
-# Run static linter and full verification test suite (including isolated Docker e2e)
+# Run static linter, typechecker, and full verification test suite (including isolated Docker e2e)
 .venv/bin/ruff check src tests
+.venv/bin/mypy src
 .venv/bin/pytest -v
 ```
 
 ## CLI Usage
 
 ```bash
+# Provision out-of-tree verifier bundles and build digest-pinned Docker image
+hveritas setup-verifier --build-image
+
 # Preflight repository audit & dry-run verification (0 external API calls)
 hveritas run --repository --dry-run \
   --initial-workspace /path/to/target-repo \
   --goal "Validate parser edge cases and boundary conditions"
+
+# Run with direct Anthropic Messages API backend (when `hx` gateway is not installed)
+export ANTHROPIC_API_KEY="sk-ant-..."
+hveritas run --backend anthropic --goal "Implement strict parser validation"
 
 # Run Bandit SAST + BenchJack verifier self-audit
 hveritas m7-audit \

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from hveritas.harness.isolation import default_scratch_root
 from hveritas.tape.session import TapeRunner, TapeStepEntry, ToolTapeManifest
 
 # VerifierCallable(workspace) -> (passed, score, details)
@@ -43,12 +44,12 @@ class ReplayBisector:
         tape_runner: TapeRunner,
         verifier_fn: VerifierCallable,
         continuation_fn: ContinuationCallable,
-        scratch_root: Path = Path("/dev/shm/hephaestus-scratch"),
+        scratch_root: Path | None = None,
     ) -> None:
         self.tape_runner = tape_runner
         self.verifier_fn = verifier_fn
         self.continuation_fn = continuation_fn
-        self.scratch_root = scratch_root.resolve()
+        self.scratch_root = (scratch_root or default_scratch_root()).resolve()
         self.scratch_root.mkdir(parents=True, exist_ok=True)
 
     def bisect(

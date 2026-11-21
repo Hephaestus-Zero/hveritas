@@ -3,29 +3,33 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from hveritas.ledger import (
-    ActionEnvelope,
-    AgentClaim,
-    AppendOnlyLedger,
-    CostRecord,
-    DeterministicClock,
-    HVeritasTracer,
-    MeasuredEffects,
-    RunRecord,
-    sha256_hex,
-    validate_semconv_span,
-)
-from hveritas.loop.models import BudgetLimits, BudgetUsage, LoopResult, LoopStopReason
+if TYPE_CHECKING:
+    from hveritas.ledger import CostRecord
+    from hveritas.loop.models import LoopResult, LoopStopReason
 
 
 def run_synthetic_10_step_demo(ledger_dir: Path, run_id: str = "m0-demo-run") -> dict[str, object]:
     """Execute a 10-step synthetic run and persist spans + receipts to SQLite + Parquet."""
+    from hveritas.ledger import (
+        ActionEnvelope,
+        AgentClaim,
+        AppendOnlyLedger,
+        CostRecord,
+        DeterministicClock,
+        HVeritasTracer,
+        MeasuredEffects,
+        RunRecord,
+        sha256_hex,
+        validate_semconv_span,
+    )
+
     clock = DeterministicClock(start_ns=1_700_000_000_000_000_000, step_ns=1_000_000)
     ledger = AppendOnlyLedger(ledger_dir)
     tracer = HVeritasTracer(ledger=ledger, run_id=run_id, seed=20261104, clock=clock)
@@ -119,6 +123,8 @@ def run_synthetic_10_step_demo(ledger_dir: Path, run_id: str = "m0-demo-run") ->
 
 def stop_reason_to_exit_code(reason: LoopStopReason) -> int:
     """Map every `LoopStopReason` to the exact M8-C / M9-D CLI exit code (`0, 2, 3, 4, 5, 6, 7, 8`)."""
+    from hveritas.loop.models import LoopStopReason
+
     mapping: dict[LoopStopReason, int] = {
         LoopStopReason.COMPLETED: 0,
         LoopStopReason.GAMING_ALARM: 2,
@@ -135,7 +141,7 @@ def stop_reason_to_exit_code(reason: LoopStopReason) -> int:
 
 def _default_run_id(goal_text: str) -> str:
     ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
-    digest8 = sha256_hex(goal_text)[:8]
+    digest8 = hashlib.sha256(goal_text.encode("utf-8")).hexdigest()[:8]
     return f"run_{ts}_{digest8}"
 
 
@@ -200,6 +206,8 @@ def _merge_cost_into_result(result: LoopResult, extra_cost: CostRecord) -> LoopR
         extra_cost.input_tokens or extra_cost.output_tokens or extra_cost.wall_ms or extra_cost.usd
     ):
         return result
+    from hveritas.loop.models import BudgetUsage
+
     merged_usage = BudgetUsage(
         wall_seconds=round(result.budget_usage.wall_seconds + extra_cost.wall_ms / 1000.0, 4),
         total_tokens=result.budget_usage.total_tokens
@@ -263,13 +271,117 @@ def _execute_repository_subcommand(args: argparse.Namespace) -> int:
     return code
 
 
+def _find_external_bundles_dir(explicit: Path | None = None) -> Path:
+    if explicit is not None:
+        return explicit.expanduser().resolve()
+    candidates = [
+        Path(__file__).resolve().parents[2] / "external_bundles",
+        Path.cwd() / "external_bundles",
+    ]
+    for cand in candidates:
+        if (cand / "verifier").is_dir() and (cand / "benchjack_tools").is_dir():
+            return cand
+    raise FileNotFoundError(
+        "Could not locate `external_bundles/{verifier,benchjack_tools}`. "
+        "Run from an hveritas repository checkout or pass `--source-dir`."
+    )
+
+
+def _execute_setup_verifier_subcommand(args: argparse.Namespace) -> int:
+    import os
+    import shutil
+    import subprocess
+
+    from hveritas.harness.isolation import copy_tree_portable
+
+    try:
+        src_root = _find_external_bundles_dir(args.source_dir)
+    except FileNotFoundError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 2
+
+    dest_root = Path(args.dest).expanduser().resolve()
+    dest_root.mkdir(parents=True, exist_ok=True)
+    provisioned: list[str] = []
+    for bundle_name in ("verifier", "benchjack_tools"):
+        src_bundle = src_root / bundle_name
+        if not src_bundle.is_dir():
+            print(f"Error: missing bundle directory {src_bundle}", file=sys.stderr)
+            return 2
+        dst_bundle = dest_root / bundle_name
+        if dst_bundle.exists():
+            shutil.rmtree(dst_bundle)
+        copy_tree_portable(src_bundle, dst_bundle)
+        for root, dirs, files in os.walk(dst_bundle):
+            rp = Path(root)
+            rp.chmod(0o755)
+            for d in dirs:
+                dp = rp / d
+                if not dp.is_symlink():
+                    dp.chmod(0o755)
+            for f in files:
+                fp = rp / f
+                if not fp.is_symlink():
+                    cur = fp.stat().st_mode
+                    fp.chmod(0o755 if (cur & 0o100) else 0o644)
+        provisioned.append(str(dst_bundle))
+
+    image_digest: str | None = None
+    digest_file_path: Path | None = None
+    if args.build_image:
+        verifier_dir = dest_root / "verifier"
+        proc = subprocess.run(
+            ["docker", "build", "-q", str(verifier_dir)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode != 0:
+            print(
+                f"Error: docker build failed (rc={proc.returncode}): {proc.stderr.strip()}",
+                file=sys.stderr,
+            )
+            return 2
+        lines = [ln.strip() for ln in proc.stdout.splitlines() if ln.strip()]
+        if not lines:
+            print("Error: docker build -q produced empty digest output", file=sys.stderr)
+            return 2
+        digest = lines[-1]
+        if not digest.startswith("sha256:"):
+            digest = f"sha256:{digest}"
+        digest_file_path = dest_root / "verifier_digest"
+        digest_file_path.write_text(digest + "\n", encoding="utf-8")
+        image_digest = digest
+
+    print(
+        json.dumps(
+            {
+                "dest": str(dest_root),
+                "bundles": provisioned,
+                "image_digest": image_digest,
+                "digest_file": str(digest_file_path) if digest_file_path else None,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
 def _execute_run_subcommand(args: argparse.Namespace) -> int:
+    if args.work_root is None:
+        from hveritas.harness.isolation import default_scratch_root
+
+        args.work_root = default_scratch_root() / "hveritas-runs"
+
     if getattr(args, "repository", False):
         return _execute_repository_subcommand(args)
 
     from hveritas.evolve.mutation_gate import MutmutMutationGate
     from hveritas.harness.noop import NoOpBaselineHarnessError
+    from hveritas.ledger import CostRecord
     from hveritas.loop import GoalLoopOrchestrator
+    from hveritas.loop.models import BudgetLimits, BudgetUsage, LoopResult, LoopStopReason
     from hveritas.spec import (
         EdgeCase,
         HumanClarificationRequiredError,
@@ -830,8 +942,8 @@ def main(argv: list[str] | None = None) -> int:
     p_run.add_argument(
         "--work-root",
         type=Path,
-        default=Path("/dev/shm/hephaestus-scratch/hveritas-runs"),
-        help="Scratch working directory root for run artifacts & ledger",
+        default=None,
+        help="Scratch working directory root for run artifacts & ledger (default: <scratch_root>/hveritas-runs)",
     )
     p_run.add_argument(
         "--initial-workspace", type=Path, default=None, help="Optional seed workspace"
@@ -983,7 +1095,7 @@ def main(argv: list[str] | None = None) -> int:
     p_m4 = sub.add_parser("m4-eval", help="Run Ek B fault-injection attribution meta-eval")
     p_m4.add_argument(
         "--scratch-dir",
-        default=Path("/dev/shm/hephaestus-scratch/m4-eval"),
+        default=None,
         type=Path,
     )
     p_m4.add_argument("--report-out", type=Path, default=None)
@@ -1000,7 +1112,31 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
     )
 
+    p_setup = sub.add_parser(
+        "setup-verifier",
+        help="Provision out-of-tree verifier & BenchJack bundles (and optionally build Docker image)",
+    )
+    p_setup.add_argument(
+        "--dest",
+        type=Path,
+        default=Path.home() / ".local" / "share" / "hveritas",
+        help="Destination directory for external bundles (default: ~/.local/share/hveritas)",
+    )
+    p_setup.add_argument(
+        "--source-dir",
+        type=Path,
+        default=None,
+        help="Optional path to external_bundles directory (auto-detected from checkout if omitted)",
+    )
+    p_setup.add_argument(
+        "--build-image",
+        action="store_true",
+        help="Build the isolated Docker verifier image and save its digest to <dest>/verifier_digest",
+    )
+
     args = parser.parse_args(argv)
+    if args.cmd == "setup-verifier":
+        return _execute_setup_verifier_subcommand(args)
     if args.cmd == "run":
         return _execute_run_subcommand(args)
     if args.cmd == "m7-audit":
@@ -1031,8 +1167,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if rep.passed else 2
     if args.cmd == "m4-eval":
         from hveritas.attribute import run_ek_b_meta_evaluation
+        from hveritas.harness.isolation import default_scratch_root
 
-        res = run_ek_b_meta_evaluation(args.scratch_dir)
+        scratch_dir = args.scratch_dir or (default_scratch_root() / "m4-eval")
+        res = run_ek_b_meta_evaluation(scratch_dir)
         rendered = json.dumps(res, indent=2, sort_keys=True, ensure_ascii=False)
         if args.report_out is not None:
             args.report_out.parent.mkdir(parents=True, exist_ok=True)
@@ -1044,6 +1182,8 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(summary, indent=2, sort_keys=True))
         return 0
     if args.cmd == "inspect-ledger":
+        from hveritas.ledger import AppendOnlyLedger
+
         ledger = AppendOnlyLedger(args.ledger_dir)
         run = ledger.get_run(args.run_id)
         steps = ledger.get_steps(args.run_id)

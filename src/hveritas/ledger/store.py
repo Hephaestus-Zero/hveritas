@@ -99,6 +99,10 @@ class AppendOnlyLedger:
         self.events_parquet_path = self.root_dir / "events.parquet"
         self._conn = sqlite3.connect(str(self.sqlite_path), isolation_level=None)
         self._conn.row_factory = sqlite3.Row
+        self._steps_parquet_dirty = False
+        self._spans_parquet_dirty = False
+        self._events_parquet_dirty = False
+        self._closed = False
         self._init_schema()
 
     def _init_schema(self) -> None:
@@ -274,7 +278,7 @@ class AppendOnlyLedger:
         except sqlite3.IntegrityError as exc:
             raise AppendOnlyViolationError(f"Cannot overwrite step in ledger: {exc}") from exc
 
-        self._sync_steps_parquet()
+        self._steps_parquet_dirty = True
         return StepRecord(envelope=envelope, receipt=receipt)
 
     def append_span(self, span: SpanRecord) -> None:
@@ -306,7 +310,7 @@ class AppendOnlyLedger:
         except sqlite3.IntegrityError as exc:
             raise AppendOnlyViolationError(f"Cannot overwrite span in ledger: {exc}") from exc
 
-        self._sync_spans_parquet()
+        self._spans_parquet_dirty = True
 
     def append_event(
         self,
@@ -334,7 +338,7 @@ class AppendOnlyLedger:
             """,
             (run_id, seq, event_type, timestamp_ns, canonical_json(payload)),
         )
-        self._sync_events_parquet()
+        self._events_parquet_dirty = True
         return rec
 
     def get_run(self, run_id: str) -> RunRecord | None:
@@ -435,8 +439,23 @@ class AppendOnlyLedger:
             expected_prev = recomputed
         return True
 
+    def flush_parquet(self) -> None:
+        """Flush any dirty SQLite tables to their Parquet mirrors."""
+        if self._closed:
+            return
+        if self._steps_parquet_dirty:
+            self._sync_steps_parquet()
+            self._steps_parquet_dirty = False
+        if self._spans_parquet_dirty:
+            self._sync_spans_parquet()
+            self._spans_parquet_dirty = False
+        if self._events_parquet_dirty:
+            self._sync_events_parquet()
+            self._events_parquet_dirty = False
+
     def digest_bundle(self) -> dict[str, str]:
         """Return SHA-256 digests of SQLite and Parquet ledger artifacts on disk."""
+        self.flush_parquet()
         digests: dict[str, str] = {}
         for name, path in (
             ("sqlite", self.sqlite_path),
@@ -497,6 +516,9 @@ class AppendOnlyLedger:
         )
 
     def _get_steps_from_parquet(self, run_id: str) -> list[StepRecord]:
+        if self._steps_parquet_dirty and not self._closed:
+            self._sync_steps_parquet()
+            self._steps_parquet_dirty = False
         if not self.steps_parquet_path.exists():
             return []
         table = pq.read_table(self.steps_parquet_path)
@@ -532,6 +554,9 @@ class AppendOnlyLedger:
         return out
 
     def _get_spans_from_parquet(self, run_id: str) -> list[SpanRecord]:
+        if self._spans_parquet_dirty and not self._closed:
+            self._sync_spans_parquet()
+            self._spans_parquet_dirty = False
         if not self.spans_parquet_path.exists():
             return []
         table = pq.read_table(self.spans_parquet_path)
@@ -557,4 +582,8 @@ class AppendOnlyLedger:
         ]
 
     def close(self) -> None:
+        if self._closed:
+            return
+        self.flush_parquet()
+        self._closed = True
         self._conn.close()
