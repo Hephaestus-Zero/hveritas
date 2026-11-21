@@ -17,6 +17,7 @@ from hveritas.evolve import (
     render_systemd_schedule_units,
 )
 from hveritas.harness import (
+    SCRATCH_ROOT,
     EncryptedOracleVault,
     IsolatedContainerVerifier,
     export_harbor_task_bundle,
@@ -27,7 +28,6 @@ from hveritas.spec import IOAssertion, RequirementDraft, SpecCompiler, build_tas
 from hveritas.tape import PlannedAction
 from hveritas.verify import MetamorphicKind, VerificationState, VerifierBus
 
-SCRATCH_ROOT = Path("/dev/shm/hephaestus-scratch")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -274,8 +274,10 @@ def test_mutmut_mutation_score_gate_measures_and_rejects_milestone_on_drop() -> 
         shutil.rmtree(work, ignore_errors=True)
 
 
-def test_benchjack_self_audit_catches_vulnerable_harness_and_passes_hveritas_production() -> None:
-    """M7 Criterion 3: BenchJack flags deliberately vulnerable harness and passes `hveritas` with reports under `docs/reports/`."""
+def test_benchjack_self_audit_catches_vulnerable_harness_and_passes_hveritas_production(
+    tmp_path: Path,
+) -> None:
+    """M7 Criterion 3: BenchJack flags deliberately vulnerable harness and passes `hveritas` without dirtying tracked reports."""
     auditor = BenchJackSelfAuditor()
 
     # Part A: Positive Control — deliberately vulnerable benchmark harness MUST fail BenchJack audit
@@ -316,9 +318,9 @@ def test_benchjack_self_audit_catches_vulnerable_harness_and_passes_hveritas_pro
     finally:
         shutil.rmtree(vuln_dir, ignore_errors=True)
 
-    # Part B: Production `hveritas` self-audit -> writes `docs/reports/m7_benchjack_self_audit.{md,json}`
-    md_out = REPO_ROOT / "docs" / "reports" / "m7_benchjack_self_audit.md"
-    json_out = REPO_ROOT / "docs" / "reports" / "m7_benchjack_self_audit.json"
+    # Part B: Production `hveritas` self-audit -> writes ephemeral report files under tmp_path
+    md_out = tmp_path / "m7_benchjack_self_audit.md"
+    json_out = tmp_path / "m7_benchjack_self_audit.json"
     prod_rep = auditor.run_audit(markdown_out=md_out, json_out=json_out)
 
     assert md_out.is_file()

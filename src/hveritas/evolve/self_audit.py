@@ -400,7 +400,7 @@ class BenchJackSelfAuditor:
                                     disposition="architectural_control_verified",
                                     mitigation_note=(
                                         "Uses isolated container tmpfs (/tmp:rw,noexec,nosuid,size=64m) or "
-                                        "/dev/shm/hephaestus-scratch/<pid>_<csprng_hex> per workspace directive."
+                                        "<scratch_root>/<pid>_<csprng_hex> per workspace directive."
                                     ),
                                 )
                             )

@@ -9,20 +9,35 @@ description = "Verified Autonomous Goal Loop — independent multi-tier verifica
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
+keywords = [
+    "verification",
+    "sandbox",
+    "docker",
+    "security",
+    "replay",
+    "bisect",
+    "fuzzing",
+    "autonomous-agents",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Testing",
+]
 dependencies = [
-    "anthropic>=0.40.0",
-    "bandit>=1.9.0",
     "cryptography>=43.0.0",
-    "httpx>=0.27.0",
-    "inspect-ai>=0.3.0",
-    "mutmut>=3.2.0",
     "networkx>=3.3",
     "openinference-instrumentation>=0.1.20",
     "openinference-semantic-conventions>=0.1.12",
     "opentelemetry-api>=1.28.0",
     "opentelemetry-sdk>=1.28.0",
     "opentelemetry-semantic-conventions>=0.49b0",
-    "opik>=1.0.0",
     "pyarrow>=18.0.0",
     "pydantic>=2.9.0",
     "pyyaml>=6.0.0",
@@ -30,12 +45,33 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+t4 = [
+    "inspect-ai>=0.3.0",
+]
+audit = [
+    "bandit>=1.9.0",
+    "mutmut>=3.2.0",
+]
+anthropic = [
+    "anthropic>=0.40.0",
+]
+all = [
+    "anthropic>=0.40.0",
+    "bandit>=1.9.0",
+    "inspect-ai>=0.3.0",
+    "mutmut>=3.2.0",
+]
 dev = [
     "mypy>=1.13.0",
     "pytest>=8.3.0",
     "pytest-asyncio>=0.24.0",
     "ruff>=0.8.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Hephaestus-Zero/hveritas"
+Repository = "https://github.com/Hephaestus-Zero/hveritas"
+Issues = "https://github.com/Hephaestus-Zero/hveritas/issues"
 
 [project.scripts]
 hveritas = "hveritas.cli:main"
@@ -47,6 +83,7 @@ packages = ["src/hveritas"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 addopts = "-q --strict-markers"
 
 [tool.ruff]

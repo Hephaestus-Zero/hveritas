@@ -181,9 +181,12 @@ def run_pytest_suite(workspace: Path, suite_dir: Path, label: str) -> dict[str, 
         (
             "import sys; sys.path.insert(0, '/verifier'); "
             "import pytest; "
-            f"sys.exit(pytest.main(['--noconftest', '-p', 'no:cacheprovider', "
-            f"'--basetemp=/tmp/pytest_{label}', '--rootdir={suite_dir}', '-q', '{suite_dir}']))"
+            "label, suite_dir = sys.argv[1], sys.argv[2]; "
+            "sys.exit(pytest.main(['--noconftest', '-p', 'no:cacheprovider', "
+            "f'--basetemp=/tmp/pytest_{label}', f'--rootdir={suite_dir}', '-q', suite_dir]))"
         ),
+        str(label),
+        str(suite_dir),
     ]
     proc = subprocess.run(
         cmd,
@@ -223,10 +226,14 @@ def run_pytest_suite(workspace: Path, suite_dir: Path, label: str) -> dict[str, 
 
 def check_api_contract(workspace: Path, contracts: list[dict[str, Any]]) -> dict[str, Any]:
     """T1 Invariant: AST-level public function/class contract check (zero execution)."""
+    ws = workspace.resolve()
     errors: list[str] = []
     for c in contracts:
         rel = str(c["file"])
-        target = (workspace / rel).resolve()
+        target = (ws / rel).resolve()
+        if target != ws and ws not in target.parents:
+            errors.append(f"path escape: {rel}")
+            continue
         if not target.is_file():
             errors.append(f"missing contract file {rel}")
             continue

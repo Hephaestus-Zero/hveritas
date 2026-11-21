@@ -23,6 +23,7 @@ from hveritas.attribute.narrator import (
     LockedAttribution,
 )
 from hveritas.attribute.taxonomy import classify_trail_fault
+from hveritas.harness.isolation import default_scratch_root
 from hveritas.ledger.canonical import canonical_json
 from hveritas.ledger.store import AppendOnlyLedger
 from hveritas.tape.session import TapeRunner, ToolTapeManifest
@@ -40,21 +41,22 @@ class AttributionPipeline:
         counterfactual_sampler: CounterfactualSampler,
         narrator: AttributionNarrator | None = None,
         n_counterfactuals: int = 5,
-        scratch_root: Path = Path("/dev/shm/hephaestus-scratch"),
+        scratch_root: Path | None = None,
     ) -> None:
+        resolved_scratch = scratch_root or default_scratch_root()
         self.tape_runner = tape_runner
         self.bisector = ReplayBisector(
             tape_runner=tape_runner,
             verifier_fn=verifier_fn,
             continuation_fn=continuation_fn,
-            scratch_root=scratch_root,
+            scratch_root=resolved_scratch,
         )
         self.cf_verifier = CounterfactualVerifier(
             tape_runner=tape_runner,
             verifier_fn=verifier_fn,
             sampler_fn=counterfactual_sampler,
             suffix_continuation_fn=continuation_fn,
-            scratch_root=scratch_root,
+            scratch_root=resolved_scratch,
         )
         self.narrator = narrator or AttributionNarrator()
         self.n_counterfactuals = n_counterfactuals

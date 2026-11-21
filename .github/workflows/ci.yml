@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -14,7 +17,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install package and dev dependencies
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[all,dev]"
       - name: Provision external verifier bundle and build isolated Docker image
         run: |
           mkdir -p "$HOME/.local/share/hveritas"
@@ -24,5 +27,7 @@ jobs:
           echo "HVERITAS_VERIFIER_IMAGE_DIGEST=$IMG_ID" >> "$GITHUB_ENV"
       - name: Ruff lint
         run: ruff check src tests
+      - name: Mypy typecheck
+        run: mypy src
       - name: Pytest suite (unit, SAST self-audit, and isolated Docker e2e)
         run: pytest -q

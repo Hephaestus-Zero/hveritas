@@ -13,9 +13,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
 
-from hveritas.harness.isolation import DEFAULT_VERIFIER_IMAGE_DIGEST
+from hveritas.harness.isolation import DEFAULT_VERIFIER_IMAGE_DIGEST, SCRATCH_ROOT
 
-SCRATCH_ROOT = Path("/dev/shm/hephaestus-scratch")
 ORACLE_DIR_NAME = "_hveritas_oracle"
 PER_RUN_TIMEOUT_S = 120.0
 GLOBAL_TIMEOUT_S = 900.0

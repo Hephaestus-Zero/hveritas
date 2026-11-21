@@ -26,6 +26,19 @@ DEFAULT_ORACLES_REPO = Path.home() / ".local" / "share" / "hveritas" / "hveritas
 DEFAULT_ORACLE_KEY_FILE = Path.home() / ".local" / "share" / "hveritas" / "oracle.key"
 
 
+def _write_private_text(path: Path, text: str, *, encoding: str = "utf-8") -> None:
+    """Create or overwrite `path` atomically with `0o600` permissions (no umask exposure window)."""
+    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        fh = os.fdopen(fd, "w", encoding=encoding)
+    except BaseException:
+        os.close(fd)
+        raise
+    with fh:
+        fh.write(text)
+    path.chmod(0o600)
+
+
 class EncryptedOracleVault:
     """Manages AES-256-GCM encrypted held-out acceptance suites in a separate repository."""
 
@@ -47,8 +60,7 @@ class EncryptedOracleVault:
             if len(raw) == 32:
                 return raw
         key = AESGCM.generate_key(bit_length=256)
-        self.key_file.write_text(key.hex(), encoding="ascii")
-        self.key_file.chmod(0o600)
+        _write_private_text(self.key_file, key.hex(), encoding="ascii")
         return key
 
     def bundle_path(self, oracle_id: str) -> Path:
@@ -77,8 +89,7 @@ class EncryptedOracleVault:
             "ciphertext_hex": ciphertext.hex(),
         }
         out_path = self.bundle_path(oracle_id)
-        out_path.write_text(canonical_json(envelope), encoding="utf-8")
-        out_path.chmod(0o600)
+        _write_private_text(out_path, canonical_json(envelope), encoding="utf-8")
 
         if git_commit and (self.repo_dir / ".git").is_dir():
             subprocess.run(
@@ -113,9 +124,13 @@ class EncryptedOracleVault:
     def ephemeral_verifier_mount(
         self,
         oracle_id: str,
-        scratch_root: Path = Path("/dev/shm/hephaestus-scratch"),
+        scratch_root: Path | None = None,
     ) -> Iterator[Path]:
         """Decrypt oracle into an ephemeral directory strictly for verifier container `:ro` mount, then shred."""
+        if scratch_root is None:
+            from hveritas.harness.isolation import default_scratch_root
+
+            scratch_root = default_scratch_root()
         scratch_root.mkdir(parents=True, exist_ok=True)
         mount_dir = scratch_root / f"hv_heldout_{os.getpid()}_{secrets.token_hex(8)}"
         mount_dir.mkdir(parents=True, mode=0o755)

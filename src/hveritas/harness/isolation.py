@@ -7,6 +7,8 @@ import os
 import secrets
 import shutil
 import subprocess
+import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -15,20 +17,63 @@ from hveritas.harness.oracle_vault import EncryptedOracleVault
 from hveritas.ledger.canonical import canonical_json
 
 DEFAULT_VERIFIER_DIR = Path.home() / ".local" / "share" / "hveritas" / "verifier"
-DEFAULT_VERIFIER_IMAGE_DIGEST = os.environ.get(
-    "HVERITAS_VERIFIER_IMAGE_DIGEST",
-    "sha256:7f8d7567a02f9d0177d158ce8c0e4a56dfa64fc7099e3e600ccdf9539753ccf2",
+DEFAULT_VERIFIER_DIGEST_FILE = Path.home() / ".local" / "share" / "hveritas" / "verifier_digest"
+_FALLBACK_VERIFIER_IMAGE_DIGEST = (
+    "sha256:7f8d7567a02f9d0177d158ce8c0e4a56dfa64fc7099e3e600ccdf9539753ccf2"
 )
-SCRATCH_ROOT = Path("/dev/shm/hephaestus-scratch")
+
+
+def default_scratch_root() -> Path:
+    """Resolve portable scratch root (`HVERITAS_SCRATCH_ROOT` -> `/dev/shm/hveritas-scratch` -> tmpdir)."""
+    env_override = os.environ.get("HVERITAS_SCRATCH_ROOT", "").strip()
+    if env_override:
+        return Path(env_override).expanduser()
+    shm_dir = Path("/dev/shm")
+    if shm_dir.is_dir() and os.access(shm_dir, os.W_OK | os.X_OK):
+        return shm_dir / "hveritas-scratch"
+    return Path(tempfile.gettempdir()) / "hveritas-scratch"
+
+
+def resolve_verifier_image_digest(digest_file: Path | None = None) -> str:
+    """Resolve verifier Docker image digest: env -> `~/.local/share/hveritas/verifier_digest` -> fallback."""
+    env_digest = os.environ.get("HVERITAS_VERIFIER_IMAGE_DIGEST", "").strip()
+    if env_digest:
+        return env_digest
+    target_file = digest_file if digest_file is not None else DEFAULT_VERIFIER_DIGEST_FILE
+    if target_file.is_file():
+        file_digest = target_file.read_text(encoding="utf-8").strip()
+        if file_digest:
+            return file_digest
+    return _FALLBACK_VERIFIER_IMAGE_DIGEST
+
+
+DEFAULT_VERIFIER_IMAGE_DIGEST = resolve_verifier_image_digest()
+SCRATCH_ROOT = default_scratch_root()
 
 
 class IsolationConfigurationError(RuntimeError):
     """Raised if verifier isolation invariants (digest pinning, external verifier dir) are violated."""
 
 
+def copy_tree_portable(src: Path, dst: Path) -> None:
+    """Copy directory tree using GNU `cp -a --reflink=auto` on Linux with `shutil.copytree` fallback."""
+    if sys.platform.startswith("linux") and shutil.which("cp") is not None:
+        proc = subprocess.run(
+            ["cp", "-a", "--reflink=auto", str(src), str(dst)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0:
+            return
+        if dst.exists():
+            shutil.rmtree(dst, ignore_errors=True)
+    shutil.copytree(src, dst, symlinks=True)
+
+
 def _make_world_readable_copy(src: Path, dst: Path) -> None:
     """Create a clean staging copy readable by container uid=10001 while mounted `:ro`."""
-    subprocess.run(["cp", "-a", "--reflink=auto", str(src), str(dst)], check=True)
+    copy_tree_portable(src, dst)
     for root, dirs, files in os.walk(dst):
         root_p = Path(root)
         root_p.chmod(0o755)
@@ -49,18 +94,21 @@ class IsolatedContainerVerifier:
     def __init__(
         self,
         verifier_dir: Path = DEFAULT_VERIFIER_DIR,
-        image_digest: str = DEFAULT_VERIFIER_IMAGE_DIGEST,
+        image_digest: str | None = None,
         oracle_vault: EncryptedOracleVault | None = None,
         agent_repo_root: Path | None = None,
     ) -> None:
+        resolved_digest = (
+            image_digest if image_digest is not None else resolve_verifier_image_digest()
+        )
         self.verifier_dir = verifier_dir.resolve()
-        self.image_digest = image_digest
+        self.image_digest = resolved_digest
         self.oracle_vault = oracle_vault or EncryptedOracleVault()
         self._fs_probe = FilesystemProbe()
 
-        if not image_digest.startswith("sha256:") or len(image_digest) != 71:
+        if not resolved_digest.startswith("sha256:") or len(resolved_digest) != 71:
             raise IsolationConfigurationError(
-                f"I8 VIOLATION: Verifier container must be pinned by sha256 digest, got {image_digest!r}"
+                f"I8 VIOLATION: Verifier container must be pinned by sha256 digest, got {resolved_digest!r}"
             )
         if not (self.verifier_dir / "runner.py").is_file():
             raise IsolationConfigurationError(

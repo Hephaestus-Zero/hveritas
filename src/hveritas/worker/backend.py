@@ -217,9 +217,16 @@ class HxCliBackend:
                 raise ModelTimeoutError(
                     f"hx call timed out after {timeout_s:.1f}s for model={chosen_model!r}"
                 ) from exc
+            except FileNotFoundError as exc:
+                raise ModelProtocolError(
+                    f"Planner binary {self.hx_bin!r} not found on PATH. "
+                    "Install `hx` or run with `--backend anthropic` "
+                    "(requires ANTHROPIC_API_KEY) or `--backend fake`."
+                ) from exc
             except OSError as exc:
                 raise ModelProtocolError(
-                    f"Failed to invoke hx binary {self.hx_bin!r}: {exc}"
+                    f"Failed to invoke hx binary {self.hx_bin!r}: {exc}. "
+                    "Alternatively run with `--backend anthropic` or `--backend fake`."
                 ) from exc
 
             payload = _parse_hx_json_stdout(proc.stdout, stderr=proc.stderr)

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hveritas.effects.fs import FilesystemProbe
+from hveritas.harness.isolation import copy_tree_portable
 
 
 @dataclass(frozen=True)
@@ -84,12 +85,7 @@ class SnapshotManager:
             self._created_btrfs_paths.append(snap_dest)
             backend = "btrfs_subvolume"
         else:
-            subprocess.run(
-                ["cp", "-a", "--reflink=auto", str(ws), str(snap_dest)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+            copy_tree_portable(ws, snap_dest)
             backend = "reflink_tree"
 
         handle = SnapshotHandle(
@@ -122,12 +118,7 @@ class SnapshotManager:
             )
             self._created_btrfs_paths.append(target)
         else:
-            subprocess.run(
-                ["cp", "-a", "--reflink=auto", str(snap_src), str(target)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+            copy_tree_portable(snap_src, target)
 
         restored_manifest = self._fs_probe.snapshot_manifest(target)
         restored_hash = self._fs_probe.compute_tree_hash(restored_manifest)

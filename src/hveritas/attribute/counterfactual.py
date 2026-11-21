@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hveritas.attribute.bisect import ContinuationCallable, VerifierCallable
+from hveritas.harness.isolation import default_scratch_root
 from hveritas.tape.session import PlannedAction, TapeRunner, TapeStepEntry, ToolTapeManifest
 
 # CounterfactualSampler(workspace, step_index, original_entry, rng) -> PlannedAction
@@ -77,13 +78,13 @@ class CounterfactualVerifier:
         verifier_fn: VerifierCallable,
         sampler_fn: CounterfactualSampler,
         suffix_continuation_fn: ContinuationCallable,
-        scratch_root: Path = Path("/dev/shm/hephaestus-scratch"),
+        scratch_root: Path | None = None,
     ) -> None:
         self.tape_runner = tape_runner
         self.verifier_fn = verifier_fn
         self.sampler_fn = sampler_fn
         self.suffix_continuation_fn = suffix_continuation_fn
-        self.scratch_root = scratch_root.resolve()
+        self.scratch_root = (scratch_root or default_scratch_root()).resolve()
         self.scratch_root.mkdir(parents=True, exist_ok=True)
 
     def evaluate(
